@@ -1,8 +1,22 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [0.1.2](https://github.com/frontier-forms/frontier-forms/compare/v0.1.1...v0.1.2) (2019-10-21)
+# [0.2.0](https://github.com/fairjungle/frontier-forms/compare/v0.1.2...v0.2.0) (2019-12-17)
+
+
+### Bug Fixes
+
+* **publish:** build package before publishing it ([ffe82fa](https://github.com/fairjungle/frontier-forms/commit/ffe82fa88498c249e6adcbc9a35809c9ad1ba76b))
+
+
+### Features
+
+* **fixed values:** add support for fixed values, not shown in form and set in initialValues ([7b76550](https://github.com/fairjungle/frontier-forms/commit/7b765505b23f92c4d27a986f029491442ea68cf6))
+
+
+
+## [0.1.2](https://github.com/frontier-forms/frontier-forms/compare/v0.1.1...v0.1.2) (2019-10-21)
 
 
 ### Bug Fixes
