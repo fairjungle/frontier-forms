@@ -3,7 +3,7 @@ import { JSONSchema7TypeName } from 'json-schema';
 import { find } from 'lodash';
 import { ComponentType, ReactNode } from 'react';
 
-export type UIKITFieldProps = FieldState & { children?: ReactNode };
+export type UIKITFieldProps = FieldState<any> & { children?: ReactNode };
 export interface UIKitResolver {
   (path: string, type: JSONSchema7TypeName, required: boolean, children?: ReactNode): ComponentType<UIKITFieldProps>;
 }
@@ -28,7 +28,7 @@ export interface UIKitAPI {
 }
 
 interface UIKitHandlers {
-  unknown: UIKitUnknownHandler;
+  unknown: UIKitUnknownHandler | undefined;
   types: { [k: string]: UIKitTypeHandler };
   paths: { [k: string]: UIKitPathHandler };
   form?: UIKitFormHandler;
@@ -94,7 +94,8 @@ export const UIKit = (): UIKitAPI => {
         return (handlers.types[type] as UIKitTypeHandler)(path, required, children);
       }
 
-      return handlers.unknown(path, type);
+      // XXX - return a default handler
+      return handlers.unknown!(path, type);
     },
   };
   return api;

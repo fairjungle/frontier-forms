@@ -2,7 +2,7 @@ import { ApolloClient } from 'apollo-client';
 import { DocumentNode, FieldNode } from 'graphql';
 import { fromIntrospectionQuery } from 'graphql-2-json-schema';
 import { JSONSchema7 } from 'json-schema';
-import { cloneDeep, get, has, map, merge, reduce, set } from 'lodash';
+import { cloneDeep, get, has, map, merge, reduce, set, unset, keys } from 'lodash';
 import { introspectionQuery } from './introspectionQuery';
 
 export interface FrontierDataGraphQLProps {
@@ -11,6 +11,7 @@ export interface FrontierDataGraphQLProps {
   schema?: JSONSchema7;
   save?: (values: object) => Promise<undefined | object>;
   formats?: { [k: string]: string };
+  fixedKeys?: [string]
 }
 
 export type SchemaFromGraphQLPropsReturn = { schema: JSONSchema7, mutationName: string } | null;
@@ -24,7 +25,7 @@ export function schemaFromGraphQLProps (props: FrontierDataGraphQLProps): Promis
 
     if (props.schema) {
       return Promise.resolve({
-        schema: schemaWithFormats(buildFormSchema(props.schema, mutationName), props.formats || {}),
+        schema: schemaWithFormats(buildFormSchema(props.schema, mutationName), props.formats || {}, props.fixedKeys),
         mutationName
       });
     } else if (props.client) {
@@ -38,7 +39,7 @@ export function schemaFromGraphQLProps (props: FrontierDataGraphQLProps): Promis
           // FIXME: update "graphql-2-json-schema" to generate JSONSchema7
           schema.$schema = 'http://json-schema.org/draft-07/schema#';
           return {
-            schema: schemaWithFormats(buildFormSchema(schema, mutationName), props.formats || {}),
+            schema: schemaWithFormats(buildFormSchema(schema, mutationName), props.formats || {}, props.fixedKeys),
             mutationName
           };
         }
@@ -51,7 +52,7 @@ export function schemaFromGraphQLProps (props: FrontierDataGraphQLProps): Promis
   }
 }
 
-function schemaWithFormats (schema: JSONSchema7, formats: { [k: string]: string }): JSONSchema7 {
+function schemaWithFormats (schema: JSONSchema7, formats: { [k: string]: string }, fixedValuesPaths: [string] | undefined): JSONSchema7 {
   const newSchema = cloneDeep(schema);
   map(formats, (format, path) => {
     const name = path.replace(/\./g, '.properties.');
@@ -61,6 +62,14 @@ function schemaWithFormats (schema: JSONSchema7, formats: { [k: string]: string 
       merge(get(newSchema.properties, name), { format })
     );
   });
+  if (fixedValuesPaths !== undefined) {
+    map(fixedValuesPaths, (path) => {
+      const name = path.replace(/\./g, '.properties.');
+      unset(newSchema.properties!, name)
+      unset(newSchema.required!, name)
+
+    });
+  }
   return newSchema;
 }
 
