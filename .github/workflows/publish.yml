@@ -16,6 +16,6 @@ jobs:
         registry-url: https://npm.pkg.github.com/
         scope: '@bertrand'
 
-    - run: npm install && npm run release && npm publish
+    - run: npm install && npm run build && npm publish
       env:
         NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
